@@ -4,11 +4,12 @@ const companySchema = mongoose.Schema({
     userId: {
         type: mongoose.Schema.ObjectId,
         ref: "User",
-        require: [true, "Company must have a defined user."]
+        required: [true, "Company must have a defined user."]
     },
     internalIdForBusiness: {
         type: String,
-        required: [true, "Company must have an id."]
+        required: [true, "Company must have an id."],
+        unique: true
     },
     type: {
         type: String,
@@ -16,7 +17,8 @@ const companySchema = mongoose.Schema({
     },
     name: {
         type: String,
-        required: [true, "Company must have a name."]
+        required: [true, "Company must have a name."],
+        unique: true
     },
     phone: {
         type: String,
@@ -27,7 +29,7 @@ const companySchema = mongoose.Schema({
     },
     isActive: {
         type: Boolean,
-        required
+        default: true
     }
 }, {
     timestamps: true
