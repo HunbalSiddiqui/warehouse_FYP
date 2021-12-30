@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema({
-    roleId: {
+    role: {
         type: mongoose.Schema.ObjectId,
         ref: "Role",
         required: [true, "User must have a defined role."]
@@ -32,6 +32,17 @@ const userSchema = new mongoose.Schema({
 }, {
     timestamps: true
 })
+
+// userSchema.pre(/^find/, function (next) {
+//     //query middleware
+//     //this -> query
+//     this.populate({
+//         path: "role",
+//         select: "type name",
+//     });
+//     next();
+// });
+
 
 //model instance method -> this method will be available for all the documents created by this model
 userSchema.methods.passwordVerification = async (password, hasedPassword) => {
