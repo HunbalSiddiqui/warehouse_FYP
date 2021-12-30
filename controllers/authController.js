@@ -65,12 +65,25 @@ exports.signin = async (req, res, next) => {
             password,
             user.password
         );
+
         if (!passwordVerified || !user) {
             return res.status(401).json({
                 status: "error",
                 error: "invalid email or password",
             });
         }
+        var userProfile = {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            username: user.username,
+            phone: user.phone,
+            email: user.email,
+            isActive: user.isActive,
+            id: user._id,
+            roleId: user.roleId
+        };
+        createAndSendToken(userProfile, res);
+
     } catch (error) {
         res.status(404).json({
             status: "error",

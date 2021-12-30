@@ -39,6 +39,12 @@ userSchema.methods.passwordVerification = async (password, hasedPassword) => {
 };
 
 userSchema.pre("save", async function (next) {
+    if (!this.isModified("password") && !this.isNew) return next();
+    this.passwordChangedAt = Date.now() - 1000
+    next();
+})
+
+userSchema.pre("save", async function (next) {
     //this -> document
     if (!this.isModified("password")) return next();
     var encryptedPassword = await bcrypt.hash(this.password, 12); //number brute force attack
