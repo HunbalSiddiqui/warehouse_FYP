@@ -97,3 +97,37 @@ exports.signin = async (req, res, next) => {
         });
     }
 }
+
+exports.protect = async (req, res, next) => {
+    try {
+        // TODO: check token for verification
+
+        // 2 : find user
+        const user = await User.findOne({ _id: req.params.id }).select("+password")
+        // 3 : set user
+        if (!user) {
+            return res.status(401).json({
+                status: "error",
+                error: "User does not exist",
+            });
+        }
+        var userProfile = {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            username: user.username,
+            phone: user.phone,
+            email: user.email,
+            isActive: user.isActive,
+            id: user._id,
+            role: user.role
+        };
+        req.body.user = userProfile
+        next()
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
