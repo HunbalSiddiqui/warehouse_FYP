@@ -2,13 +2,12 @@ const Company = require("../models/companyModel");
 
 exports.createCompany = async (req, res, next) => {
     try {
-
         const query = Company.find()
         const count = await query.count()
         req.body.internalIdForBusiness = `C-${count}`
         const company = await Company.create(req.body)
         if (!company) {
-            res.status(404).json({
+            return res.status(404).json({
                 status: "error",
                 success: false,
                 error: "Invalid data provided. Company was not provided",
@@ -34,11 +33,37 @@ exports.getCompanies = async (req, res, next) => {
     try {
         var companies = await Company.find();
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             status: "success",
             data: {
                 companies
+            },
+        });
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+exports.getCompany = async (req, res, next) => {
+    try {
+        var company = await Company.findOne({ _id: req.params.id });
+        if (!company) {
+            return res.status(404).json({
+                status: "error",
+                success: false,
+                error: "Company not found",
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            status: "success",
+            data: {
+                company
             },
         });
     } catch (error) {

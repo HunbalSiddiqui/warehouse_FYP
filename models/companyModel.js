@@ -8,7 +8,8 @@ const companySchema = mongoose.Schema({
     },
     internalIdForBusiness: {
         type: String,
-        required: [true, "Company must have an id."]
+        required: [true, "Company must have an id."],
+        unique: true
     },
     type: {
         type: String,
@@ -16,7 +17,8 @@ const companySchema = mongoose.Schema({
     },
     name: {
         type: String,
-        required: [true, "Company must have a name."]
+        required: [true, "Company must have a name."],
+        unique: true
     },
     phone: {
         type: String,
