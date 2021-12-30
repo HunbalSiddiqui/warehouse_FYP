@@ -1,8 +1,9 @@
 const express = require("express")
-const { createCompany } = require("../controllers/companyController")
+const { createCompany, getCompanies } = require("../controllers/companyController")
 
 const router = express.Router()
 
-router.post("/",createCompany)
+router.post("/", createCompany)
+router.get("/", getCompanies)
 
 module.exports = router

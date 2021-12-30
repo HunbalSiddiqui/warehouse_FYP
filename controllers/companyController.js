@@ -29,3 +29,23 @@ exports.createCompany = async (req, res, next) => {
         });
     }
 }
+
+exports.getCompanies = async (req, res, next) => {
+    try {
+        var companies = await Company.find();
+
+        res.status(200).json({
+            success: true,
+            status: "success",
+            data: {
+                companies
+            },
+        });
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
