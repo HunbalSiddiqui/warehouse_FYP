@@ -4,7 +4,7 @@ const companySchema = mongoose.Schema({
     userId: {
         type: mongoose.Schema.ObjectId,
         ref: "User",
-        require: [true, "Company must have a defined user."]
+        required: [true, "Company must have a defined user."]
     },
     internalIdForBusiness: {
         type: String,
@@ -27,7 +27,7 @@ const companySchema = mongoose.Schema({
     },
     isActive: {
         type: Boolean,
-        required
+        default: true
     }
 }, {
     timestamps: true
