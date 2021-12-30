@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const JWT = require("jsonwebtoken");
+const Role = require("../models/roleModel");
 
 
 const signJWT = (userId) => {
@@ -58,7 +59,11 @@ exports.signin = async (req, res, next) => {
             });
         }
         //fetch user whose email is given
-        var user = await User.findOne({ email }).select("+password");
+        var user = await User.findOne({ email }).populate({
+            path: "role",
+            select: "type name allowedApps",
+            model: Role
+        })
         //verify password
         //enceptyed ps === password
         var passwordVerified = await user.passwordVerification(
@@ -80,7 +85,7 @@ exports.signin = async (req, res, next) => {
             email: user.email,
             isActive: user.isActive,
             id: user._id,
-            roleId: user.roleId
+            role: user.role
         };
         createAndSendToken(userProfile, res);
 
