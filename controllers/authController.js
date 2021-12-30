@@ -85,7 +85,7 @@ exports.signin = async (req, res, next) => {
             email: user.email,
             isActive: user.isActive,
             id: user._id,
-            roleId: user.role
+            role: user.role
         };
         createAndSendToken(userProfile, res);
 
