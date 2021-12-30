@@ -1,7 +1,11 @@
+require("dotenv").config();
 const app = require('./app');
 const mongoose = require("mongoose");
 
-const DB = "mongodb://localhost:27017/testMongoDb";
+const DB = process.env.MONGO_STRING.replace(
+    "<PASSWORD>",
+    process.env.MONGO_PASSWORD
+);
 
 mongoose.connect(DB, {
     useNewURLParser: true,
@@ -11,9 +15,10 @@ mongoose.connect(DB, {
         console.log("Connected with DB.");
     })
     .catch((err) => {
+        console.log(err)
         console.log("DB not connected.")
     })
 
-app.listen(3000, () => {
-    console.log("Server is running at port 3000")
+app.listen(process.env.PORT, () => {
+    console.log("Server is running at port " + process.env.PORT)
 })
