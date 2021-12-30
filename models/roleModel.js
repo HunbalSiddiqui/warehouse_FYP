@@ -8,7 +8,9 @@ const roleSchema = new mongoose.Schema({
         type: String
     },
     allowedApps: {
-        type: String
+        type: String,
+        enum: ['OPERATIONS', 'CUSTOMER'],
+        default: 'OPERATIONS'
     }
 }, {
     timestams: true

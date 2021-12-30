@@ -6,23 +6,23 @@ const userSchema = new mongoose.Schema({
     roleId: {
         type: mongoose.Schema.ObjectId,
         ref: "Role",
-        // require: [true, "User must have a defined role."]
+        required: [true, "User must have a defined role."]
     },
     firstName: String,
     lastName: String,
     username: {
         type: String,
-        require: [true, "User must have a username."],
+        required: [true, "User must have a username."],
         unique: true
     },
     phone: {
         type: String,
-        require: [true, "User must have a phone number."]
+        required: [true, "User must have a phone number."]
     },
     password: String,
     email: {
         type: String,
-        require: [true, "User must have an email."],
+        required: [true, "User must have an email."],
         unique: true
     },
     isActive: {
