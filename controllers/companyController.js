@@ -2,10 +2,21 @@ const Company = require("../models/companyModel");
 
 exports.createCompany = async (req, res, next) => {
     try {
+        // check if company exist
+        var company = await Company.findOne({ name: req.body.name })
+
+        if (company) {
+            return res.status(404).json({
+                status: "error",
+                success: false,
+                error: "This company already exists in the system.",
+            });
+        }
+
         const query = Company.find()
         const count = await query.count()
         req.body.internalIdForBusiness = `C-${count}`
-        const company = await Company.create(req.body)
+        company = await Company.create(req.body)
         if (!company) {
             return res.status(404).json({
                 status: "error",
