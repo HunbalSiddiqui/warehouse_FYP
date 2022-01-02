@@ -4,24 +4,28 @@ const warehouseSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.ObjectId,
         ref: "User",
-        require: [true, "Warehouse must have a defined user."]
+        required: [true, "Warehouse must have a defined user."]
     },
     name: {
         type: String,
-        require: [true, "Warehouse must have a name."]
+        required: [true, "Warehouse must have a name."]
     },
     address: {
         type: String,
-        require: [true, "Warehouse must have an address."]
+        required: [true, "Warehouse must have an address."]
     },
     businessWarehouseCode: {
         type: String,
+        required: [true, "Warehouse must have a code."]
     },
     city: {
-        type: String
+        type: String,
+        required: [true, "Warehouse city must be provided."]
     },
     isActive: {
         type: Boolean,
+        required: [true],
+        default: true
     }
 }, {
     timestamps: true
