@@ -4,14 +4,15 @@ const uomSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.ObjectId,
         ref: "User",
-        require: [true, "Uom must have a defined user."]
+        required: [true, "Uom must have a defined user."]
     },
     name: {
         type: String,
-        require: [true, "Uom must have a name."]
+        required: [true, "Uom must have a name."]
     },
     isActive: {
         type: Boolean,
+        required: true,
         default: true
     }
 }, {
