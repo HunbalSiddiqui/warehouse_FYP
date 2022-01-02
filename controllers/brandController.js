@@ -1,25 +1,25 @@
-const Warehouse = require("../models/warehouseModel");
+const Brand = require("../models/brandModel");
 
-exports.createWarehouse = async (req, res, next) => {
+exports.createBrand = async (req, res, next) => {
     try {
         // check if brand exists
-        var warehouse = await Warehouse.findOne({ name: req.body.name })
+        var brand = await Brand.findOne({ name: req.body.name })
 
-        if (warehouse) {
+        if (brand) {
             return res.status(404).json({
                 status: "error",
                 success: false,
-                error: "This warehouse already exists in the system.",
+                error: "This brand already exists in the system.",
             });
         }
 
-        warehouse = await Warehouse.create(req.body)
+        brand = await Brand.create(req.body)
 
         return res.status(200).json({
             success: true,
             status: "success",
             data: {
-                warehouse,
+                brand,
             },
         })
 
@@ -32,24 +32,24 @@ exports.createWarehouse = async (req, res, next) => {
     }
 }
 
-exports.updateWarehouse = async (req, res, next) => {
+exports.updateBrand = async (req, res, next) => {
     try {
-        var warehouse = await Warehouse.findOne({ _id: req.params.id });
-        if (!warehouse) {
+        var brand = await Brand.findOne({ _id: req.params.id });
+        if (!brand) {
             return res.status(404).json({
                 status: "error",
                 success: false,
-                error: "warehouse does not exist.",
+                error: "brand does not exist.",
             });
         }
-        warehouse = await Warehouse.findOneAndUpdate({ _id: req.params.id }, req.body, {
+        brand = await Brand.findOneAndUpdate({ _id: req.params.id }, req.body, {
             new: true,
         });
         return res.status(200).json({
             success: true,
             status: "success",
             data: {
-                warehouse
+                brand
             },
         });
     } catch (error) {
@@ -61,15 +61,15 @@ exports.updateWarehouse = async (req, res, next) => {
     }
 }
 
-exports.getWarehouses = async (req, res, next) => {
+exports.getBrands = async (req, res, next) => {
     try {
-        var warehouses = await Warehouse.find();
+        var brands = await Brand.find();
 
         return res.status(200).json({
             success: true,
             status: "success",
             data: {
-                warehouses
+                brands
             },
         });
     } catch (error) {
@@ -81,21 +81,21 @@ exports.getWarehouses = async (req, res, next) => {
     }
 }
 
-exports.getWarehouse = async (req, res, next) => {
+exports.getBrand = async (req, res, next) => {
     try {
-        var warehouse = await Warehouse.findOne({ _id: req.params.id });
-        if (!warehouse) {
+        var brand = await Brand.findOne({ _id: req.params.id });
+        if (!brand) {
             return res.status(404).json({
                 status: "error",
                 success: false,
-                error: "Warehouse does not exist.",
+                error: "brand does not exist.",
             });
         }
         return res.status(200).json({
             success: true,
             status: "success",
             data: {
-                warehouse
+                brand
             },
         });
     } catch (error) {
