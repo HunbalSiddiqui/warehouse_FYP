@@ -1,24 +1,24 @@
-const Uom = require("../models/uomModel");
+const Category = require("../models/categoryModel");
 
-exports.createUOM = async (req, res, next) => {
+exports.createCategory = async (req, res, next) => {
     try {
-        // check if brand exists
-        var uom = await Uom.findOne({ name: req.body.name })
-        if (uom) {
+        // check if category exists
+        var category = await Category.findOne({ name: req.body.name })
+        if (category) {
             return res.status(404).json({
                 status: "error",
                 success: false,
-                error: "This uom already exists in the system.",
+                error: "This category already exists in the system.",
             });
         }
 
-        uom = await Uom.create(req.body)
+        category = await Category.create(req.body)
 
         return res.status(200).json({
             success: true,
             status: "success",
             data: {
-                uom,
+                category,
             },
         })
 
@@ -31,24 +31,24 @@ exports.createUOM = async (req, res, next) => {
     }
 }
 
-exports.updateUOM = async (req, res, next) => {
+exports.updateCategory = async (req, res, next) => {
     try {
-        var uom = await Uom.findOne({ _id: req.params.id });
-        if (!uom) {
+        var category = await Category.findOne({ _id: req.params.id });
+        if (!category) {
             return res.status(404).json({
                 status: "error",
                 success: false,
-                error: "uom does not exist.",
+                error: "category does not exist.",
             });
         }
-        uom = await Uom.findOneAndUpdate({ _id: req.params.id }, req.body, {
+        category = await Category.findOneAndUpdate({ _id: req.params.id }, req.body, {
             new: true,
         });
         return res.status(200).json({
             success: true,
             status: "success",
             data: {
-                uom
+                category
             },
         });
     } catch (error) {
@@ -60,15 +60,15 @@ exports.updateUOM = async (req, res, next) => {
     }
 }
 
-exports.getUOMs = async (req, res, next) => {
+exports.getCategories = async (req, res, next) => {
     try {
-        var uoms = await Uom.find();
+        var categories = await Category.find();
 
         return res.status(200).json({
             success: true,
             status: "success",
             data: {
-                uoms
+                categories
             },
         });
     } catch (error) {
@@ -80,21 +80,21 @@ exports.getUOMs = async (req, res, next) => {
     }
 }
 
-exports.getUOM = async (req, res, next) => {
+exports.getCategory = async (req, res, next) => {
     try {
-        var uom = await Uom.findOne({ _id: req.params.id });
-        if (!uom) {
+        var category = await Category.findOne({ _id: req.params.id });
+        if (!category) {
             return res.status(404).json({
                 status: "error",
                 success: false,
-                error: "uom does not exist.",
+                error: "category does not exist.",
             });
         }
         return res.status(200).json({
             success: true,
             status: "success",
             data: {
-                uom
+                category
             },
         });
     } catch (error) {

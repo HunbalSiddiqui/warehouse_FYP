@@ -7,6 +7,7 @@ const companyRouter = require("./routes/companyRoute");
 const warehouseRouter = require("./routes/warehouseRoute")
 const brandRouter = require("./routes/brandRoute")
 const uomRouter = require("./routes/uomRoute")
+const categoryRouter = require("./routes/categoryRoute")
 
 const app = express();
 app.use(express.json());
@@ -17,5 +18,6 @@ app.use("/api/v1/companies", companyRouter)
 app.use("/api/v1/warehouses", warehouseRouter)
 app.use("/api/v1/brands", brandRouter)
 app.use("/api/v1/uoms", uomRouter)
+app.use("/api/v1/categories", categoryRouter)
 
 module.exports = app;
