@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const JWT = require("jsonwebtoken");
 const Role = require("../models/roleModel");
+const { promisify } = require("util");
 
 
 const signJWT = (userId) => {
@@ -101,16 +102,51 @@ exports.signin = async (req, res, next) => {
 exports.protect = async (req, res, next) => {
     try {
         // TODO: check token for verification
-
-        // 2 : find user
-        const user = await User.findOne({ _id: req.params.id }).select("+password")
-        // 3 : set user
+        var token = null;
+        // 1- fetch token from request header
+        if (
+            req.headers.authorization &&
+            req.headers.authorization.startsWith("Bearer") // authorization: Bearer {token}
+        ) {
+            token = req.headers.authorization.split(" ")[1];
+        }
+        // 2- check if token exits
+        if (!token) {
+            return res.status(401).json({
+                error: "please sign in!",
+            });
+        }
+        // 3- verify
+        var { id: userId, iat: tokenIssuedAt } = await promisify(JWT.verify)(
+            token,
+            process.env.JWT_WEB_SECRET
+        ); //converting callback function to async await method (promise)
+        // 4- check if user exist in DB
+        var user = await User.findById(userId).select("+password");
+        if (!user) {
+            return res.status(401).json({
+                error: "user belonging to this token does not exist!",
+            });
+        }
+        // 5- check if user doesnt change password after signing token
+        var passwordChangedAt = user.passwordChangedAt;
+        if (passwordChangedAt) {
+            var isPasswordChangedAfter =
+                passwordChangedAt.getTime() > tokenIssuedAt * 1000;
+            if (isPasswordChangedAfter) {
+                return res.status(401).json({
+                    error: "password has been changed, please login again!",
+                });
+            }
+        }
+        // 6 : set user
         if (!user) {
             return res.status(401).json({
                 status: "error",
                 error: "User does not exist",
             });
         }
+        
         var userProfile = {
             firstName: user.firstName,
             lastName: user.lastName,
@@ -121,6 +157,7 @@ exports.protect = async (req, res, next) => {
             id: user._id,
             role: user.role
         };
+
         req.body.user = userProfile
         next()
     } catch (error) {
