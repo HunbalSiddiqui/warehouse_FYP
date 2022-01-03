@@ -1,11 +1,12 @@
 const express = require("express")
+const { protect } = require("../controllers/authController")
 const { createProduct, getProduct, getProducts, updateProduct } = require("../controllers/productController")
 
 const router = express.Router()
 
-router.post("/", createProduct)
-router.get("/", getProducts)
-router.get("/:id", getProduct)
-router.patch("/:id", updateProduct);
+router.post("/", protect, createProduct)
+router.get("/", protect, getProducts)
+router.get("/:id", protect, getProduct)
+router.patch("/:id", protect, updateProduct);
 
 module.exports = router
