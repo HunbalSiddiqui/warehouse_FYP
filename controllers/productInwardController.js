@@ -71,7 +71,7 @@ exports.createProductIward = async (req, res, next) => {
 exports.getProductInwards = async (req, res, next) => {
     try {
         const productInwards = await ProductInward.find();
-        if (!productInwards || productInwards.length) {
+        if (!productInwards || !productInwards.length) {
             res.status(404).json({
                 status: "error",
                 success: false,
