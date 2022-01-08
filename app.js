@@ -10,7 +10,7 @@ const uomRouter = require("./routes/uomRoute")
 const categoryRouter = require("./routes/categoryRoute")
 const productRouter = require("./routes/productRoute")
 const productInwardRouter = require("./routes/productInwardRoute")
-
+const inventoryRouter = require("./routes/inventoryRoute")
 const app = express();
 app.use(express.json());
 
@@ -23,4 +23,5 @@ app.use("/api/v1/uoms", uomRouter)
 app.use("/api/v1/categories", categoryRouter)
 app.use("/api/v1/products", productRouter)
 app.use("/api/v1/product-inwards", productInwardRouter)
+app.use("/api/v1/inventories", inventoryRouter)
 module.exports = app;
