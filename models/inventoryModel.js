@@ -3,19 +3,17 @@ const mongoose = require("mongoose")
 const inventorySchema = mongoose.Schema({
     availableQuantity: {
         type: Number,
-        // required: [true, "Available quantity must be provided."]
     },
     totalInwardQuantity: {
         type: Number,
-        // required: [true, "Total inward quantity must be provided."]
     },
     totalCommitedQuantity: {
         type: Number,
-        // required: [true, "Total committed quantity must be provided."]
+        default: 0
     },
     totalDispatchedQuantity: {
         type: Number,
-        // required: [true, "Total dispatched quantity must be provided."]
+        default: 0
     },
     productId: {
         type: mongoose.Schema.ObjectId,
@@ -32,9 +30,85 @@ const inventorySchema = mongoose.Schema({
         ref: "Warehouse",
         required: [true, "Warehouse must be provided."]
     },
-}, {
-    timestamps: true
-})
+},
+    { toJSON: { virtuals: true }, toObject: { virtuals: true }, timestamps: true }
+)
+
+inventorySchema.virtual("Warehouse", {
+    ref: "Warehouse",
+    foreignField: "_id", //referencing -> populate
+    localField: "warehouseId", //referencing -> populate
+    justOne: true // to remove array
+});
+
+inventorySchema.virtual("Company", {
+    ref: "Company",
+    foreignField: "_id", //referencing -> populate
+    localField: "companyId", //referencing -> populate
+    justOne: true // to remove array
+});
+
+inventorySchema.virtual("Product", {
+    ref: "Product",
+    foreignField: "_id", //referencing -> populate
+    localField: "productId", //referencing -> populate
+    justOne: true // to remove array
+});
+
+inventorySchema.pre(/^find/, function (next) {
+    //query middleware
+    //this -> query
+    this.populate({
+        path: "Product",
+        select: "name",
+        populate: [{
+            path: 'uomId',
+            model: 'Uom',
+            select: "name",
+        }]
+    });
+    this.populate({
+        path: "Warehouse",
+        select: "name",
+    });
+    this.populate({
+        path: "Company",
+        select: "name",
+    });
+    next();
+});
+
+inventorySchema.pre(/^findOne/, function (next) {
+    //query middleware
+    //this -> query
+    this.populate({
+        path: "Warehouse",
+        select: "_id name"
+    });
+    this.populate({
+        path: "Product",
+        select: "_id name categoryId brandId uomId",
+        populate: [{
+            path: 'categoryId',
+            model: 'Category',
+            select: "name"
+        }, {
+            path: 'brandId',
+            model: 'Brand',
+            select: "name"
+        }, {
+            path: 'uomId',
+            model: 'Uom',
+            select: "name"
+        }]
+
+    });
+    this.populate({
+        path: "Company",
+        select: "_id name",
+    });
+    next();
+});
 
 const Inventory = new mongoose.model("Inventory", inventorySchema)
 
