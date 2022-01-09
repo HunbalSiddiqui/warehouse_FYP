@@ -1,8 +1,11 @@
 const { json } = require("body-parser");
 const conn = require("../models");
+const Company = require("../models/companyModel");
 const DispatchOrder = require("../models/dispatchOrderModel");
 const Inventory = require("../models/inventoryModel");
 const OrderGroup = require("../models/orderGroup");
+const Product = require("../models/productModel");
+const Warehouse = require("../models/warehouseModel");
 
 exports.createDispatchOrder = async (req, res, next) => {
     const session = await conn.startSession();
@@ -92,6 +95,79 @@ exports.createDispatchOrder = async (req, res, next) => {
                 updatedInventories
             },
         });
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+exports.getDispatchOrders = async (req, res, next) => {
+    try {
+        let dispatchOrders = await DispatchOrder.find();
+
+        return res.status(200).json({
+            success: true,
+            status: "success",
+            data: {
+                dispatchOrders
+            },
+        });
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+exports.getDispatchOrder = async (req, res, next) => {
+    try {
+        let dispatchOrder = await DispatchOrder.findOne({ _id: req.params.id });
+
+        if (!dispatchOrder) {
+            res.status(404).json({
+                status: "error",
+                success: false,
+                error: "Dispatch Order not found.",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            status: "success",
+            data: {
+                dispatchOrder
+            },
+        });
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+exports.getDispatchOrderRelations = async (req, res, next) => {
+    try {
+        var warehouses = await Warehouse.find();
+        // var products = await Product.find();
+        var companies = await Company.find();
+
+        return res.status(200).json({
+            success: true,
+            status: "success",
+            data: {
+                warehouses,
+                // products,
+                companies
+            },
+        });
+
     } catch (error) {
         res.status(404).json({
             status: "error",
