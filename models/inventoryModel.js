@@ -7,7 +7,7 @@ const inventorySchema = mongoose.Schema({
     totalInwardQuantity: {
         type: Number,
     },
-    totalCommitedQuantity: {
+    totalCommittedQuantity: {
         type: Number,
         default: 0
     },

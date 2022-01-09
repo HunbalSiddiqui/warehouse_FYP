@@ -69,7 +69,7 @@ exports.createDispatchOrder = async (req, res, next) => {
                         if (_inventory.quantity > inventory.availableQuantity)
                             throw new Error("Cannot create orders above available quantity");
                         try {
-                            inventory.committedQuantity += +_inventory.quantity;
+                            inventory.totalCommittedQuantity += +_inventory.quantity;
                             inventory.availableQuantity -= +_inventory.quantity;
                             return inventory.save();
                         } catch (err) {
