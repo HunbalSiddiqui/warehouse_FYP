@@ -139,7 +139,7 @@ exports.getProductInward = async (req, res, next) => {
 exports.getInwardRelations = async (req, res, next) => {
     try {
         var warehouses = await Warehouse.find();
-        var products = await Product.find();
+        // var products = await Product.find();
         var companies = await Company.find();
 
         return res.status(200).json({
@@ -147,7 +147,7 @@ exports.getInwardRelations = async (req, res, next) => {
             status: "success",
             data: {
                 warehouses,
-                products,
+                // products,
                 companies
             },
         });
