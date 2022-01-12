@@ -122,3 +122,71 @@ exports.createProductOutward = async (req, res, next) => {
         });
     }
 }
+
+exports.getProductOutwards = async (req, res, next) => {
+    try {
+        const productOutwards = await ProductOutward.find();
+        if (!productOutwards || !productOutwards.length) {
+            res.status(404).json({
+                status: "error",
+                success: false,
+                data: [],
+                error: "Product Outwards not found.",
+            });
+        }
+        var orderGroups = [], outwardGroups = []
+        for (let outward of productOutwards) {
+            orderGroups.push(await OrderGroup.findOne({ orderId: outward.dispatchOrderId }))
+            outwardGroups.push(await OutwardGroup.findOne({ outwardId: outward.id }))
+        }
+        // return 
+        return res.status(200).json({
+            success: true,
+            status: "success",
+            data: {
+                productOutwards,
+                orderGroups,
+                outwardGroups
+            },
+        });
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+exports.getProductOutward = async (req, res, next) => {
+    try {
+        const productOutward = await ProductOutward.findOne({ _id: req.params.id });
+        if (!productOutward) {
+            res.status(404).json({
+                status: "error",
+                success: false,
+                error: "Product Outward not found.",
+            });
+        }
+        var orderGroups = [], outwardGroups = []
+        orderGroups.push(await OrderGroup.findOne({ orderId: productOutward.dispatchOrderId }))
+        outwardGroups.push(await OutwardGroup.findOne({ outwardId: productOutward.id }))
+        // return 
+        return res.status(200).json({
+            success: true,
+            status: "success",
+            data: {
+                productOutward,
+                orderGroups,
+                outwardGroups
+            },
+        });
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+

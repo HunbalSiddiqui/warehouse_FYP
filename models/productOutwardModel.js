@@ -1,4 +1,5 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const DispatchOrder = require("./dispatchOrderModel");
 
 const productOutwardSchema = mongoose.Schema({
     // TODO: add vehicleId once vehicle is created in Logistics part
@@ -30,7 +31,26 @@ const productOutwardSchema = mongoose.Schema({
         default: false,
     },
 }, {
+    toJSON: { virtuals: true }, toObject: { virtuals: true }
+    ,
     timestamps: true
+})
+
+productOutwardSchema.virtual("DispatchOrder", {
+    ref: "DispatchOrder",
+    foreignField: "_id", //referencing -> populate
+    localField: "dispatchOrderId", //referencing -> populate
+});
+
+
+productOutwardSchema.pre(/^find/, function (next) {
+    //query middleware
+    //this -> query
+    this.populate({
+        path: "DispatchOrder",
+        select: "_id internalIdForBusiness status",
+    });
+    next()
 })
 
 const ProductOutward = new mongoose.model("ProductOutward", productOutwardSchema)

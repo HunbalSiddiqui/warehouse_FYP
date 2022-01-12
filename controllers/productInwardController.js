@@ -32,11 +32,9 @@ exports.createProductIward = async (req, res, next) => {
         var inventories = [];
         for (let product of req.body.products) {
             let inventory = await Inventory.findOne({
-                where: {
-                    companyId: req.body.companyId,
-                    warehouseId: req.body.warehouseId,
-                    productId: product.id,
-                }
+                companyId: req.body.companyId,
+                warehouseId: req.body.warehouseId,
+                productId: product.id
             })
             //IF inventory is not created than create inventory ELSE update existing inventory
             if (!inventory) {
