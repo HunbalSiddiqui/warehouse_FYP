@@ -12,6 +12,7 @@ const productRouter = require("./routes/productRoute")
 const productInwardRouter = require("./routes/productInwardRoute")
 const inventoryRouter = require("./routes/inventoryRoute")
 const dispatchOrderRouter = require("./routes/dispatchOrderRoute")
+const productOutwardRouter = require("./routes/productOutwardRoute")
 
 const app = express();
 app.use(express.json());
@@ -27,5 +28,6 @@ app.use("/api/v1/products", productRouter)
 app.use("/api/v1/product-inwards", productInwardRouter)
 app.use("/api/v1/inventories", inventoryRouter)
 app.use("/api/v1/dispatch-orders", dispatchOrderRouter)
+app.use("/api/v1/product-outwards", productOutwardRouter)
 
 module.exports = app;
