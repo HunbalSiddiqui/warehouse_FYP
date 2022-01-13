@@ -5,6 +5,8 @@ const ProductOutward = require("../models/productOutwardModel");
 const OrderGroup = require("../models/orderGroup");
 const Inventory = require("../models/inventoryModel");
 const OutwardGroup = require("../models/outwardGroup");
+const Warehouse = require("../models/warehouseModel");
+const Company = require("../models/companyModel");
 
 exports.createProductOutward = async (req, res, next) => {
     const session = await conn.startSession();
@@ -190,3 +192,25 @@ exports.getProductOutward = async (req, res, next) => {
     }
 }
 
+exports.getProductOutwardRelations = async (req, res, next) => {
+    try {
+        var warehouses = await Warehouse.find();
+        var companies = await Company.find();
+
+        return res.status(200).json({
+            success: true,
+            status: "success",
+            data: {
+                warehouses,
+                companies
+            },
+        });
+
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
