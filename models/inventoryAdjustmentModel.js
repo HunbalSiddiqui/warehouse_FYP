@@ -19,7 +19,22 @@ const inventoryAdjustmentSchema = mongoose.Schema({
         type: String,
     },
 }, {
+    toJSON: { virtuals: true }, toObject: { virtuals: true },
     timestamps: true
+})
+
+inventoryAdjustmentSchema.virtual("Inventory", {
+    ref: "Inventory",
+    foreignField: "_id", //referencing -> populate
+    localField: "inventoryId", //referencing -> populate
+    justOne: true // to remove array
+});
+
+inventoryAdjustmentSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: "Inventory",
+    });
+    next()
 })
 
 const InventoryAdjustment = new mongoose.model("InventoryAdjustment", inventoryAdjustmentSchema)
