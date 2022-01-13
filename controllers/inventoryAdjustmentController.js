@@ -1,3 +1,4 @@
+const conn = require("../models");
 const InventoryAdjustment = require("../models/inventoryAdjustmentModel");
 const Inventory = require("../models/inventoryModel");
 const Role = require("../models/roleModel");
@@ -111,6 +112,56 @@ exports.getInventoryAdjustment = async (req, res, next) => {
             data: {
                 inventoryAdjustment
             },
+        });
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+exports.deleteInventoryAdjustment = async (req, res, next) => {
+    try {
+        const session = await conn.startSession();
+        session.startTransaction();
+
+        var inventoryAdjustment = await InventoryAdjustment.findOne({ _id: req.params.id })
+        if (!inventoryAdjustment) {
+            return res.status(404).json({
+                status: "error",
+                success: false,
+                error: "Inventory Adjustment does not exist.",
+            });
+        }
+        // find inventory
+        var inventory = await Inventory.findOne({ _id: inventoryAdjustment.inventoryId })
+        if (!inventory) {
+            return res.status(404).json({
+                status: "error",
+                success: false,
+                error: "Inventory  does not exist.",
+            });
+        }
+        var adjustedQuantity = parseInt(inventory.availableQuantity) + parseInt(inventoryAdjustment.adjustmentQuantity)
+        inventory.availableQuantity = adjustedQuantity
+        // update inventory
+        inventory = await Inventory.findOneAndUpdate({ _id: inventory.id }, inventory, {
+            new: true,
+        }).session(session);
+
+        inventoryAdjustment = await InventoryAdjustment.deleteOne({ _id: req.params.id }).session(session)
+
+        await session.commitTransaction();
+        session.endSession();
+
+        return res.status(200).json({
+            success: true,
+            status: "success",
+            data: {
+                inventory
+            }
         });
     } catch (error) {
         res.status(404).json({
