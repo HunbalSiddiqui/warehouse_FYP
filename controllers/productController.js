@@ -68,10 +68,14 @@ exports.getProducts = async (req, res, next) => {
         var skip = (page - 1) * limit;
 
         var products = await Product.find().skip(skip).limit(limit);
+        if (limit > 0) {
+            var totalPages = Math.ceil((await Product.countDocuments()) / limit);
+        }
 
         return res.status(200).json({
             success: true,
             status: "success",
+            pages: totalPages,
             data: {
                 products
             },

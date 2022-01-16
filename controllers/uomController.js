@@ -68,10 +68,14 @@ exports.getUOMs = async (req, res, next) => {
         var skip = (page - 1) * limit;
 
         var uoms = await Uom.find().skip(skip).limit(limit);
+        if (limit > 0) {
+            var totalPages = Math.ceil((await Uom.countDocuments()) / limit);
+        }
 
         return res.status(200).json({
             success: true,
             status: "success",
+            pages: totalPages,
             data: {
                 uoms
             },

@@ -86,17 +86,14 @@ exports.getProductInwards = async (req, res, next) => {
         var skip = (page - 1) * limit;
 
         const productInwards = await ProductInward.find().skip(skip).limit(limit);
-        if (!productInwards || !productInwards.length) {
-            res.status(404).json({
-                status: "error",
-                success: false,
-                error: "Product Inwards not found.",
-            });
+        if (limit > 0) {
+            var totalPages = Math.ceil((await ProductInward.countDocuments()) / limit);
         }
         // return 
         return res.status(200).json({
             success: true,
             status: "success",
+            pages: totalPages,
             data: {
                 productInwards
             },

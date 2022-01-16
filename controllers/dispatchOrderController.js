@@ -112,10 +112,14 @@ exports.getDispatchOrders = async (req, res, next) => {
         var skip = (page - 1) * limit;
 
         let dispatchOrders = await DispatchOrder.find().skip(skip).limit(limit);;
+        if (limit > 0) {
+            var totalPages = Math.ceil((await DispatchOrder.countDocuments()) / limit);
+        }
 
         return res.status(200).json({
             success: true,
             status: "success",
+            pages: totalPages,
             data: {
                 dispatchOrders
             },

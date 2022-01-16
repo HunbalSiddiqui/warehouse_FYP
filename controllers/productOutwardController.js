@@ -133,14 +133,10 @@ exports.getProductOutwards = async (req, res, next) => {
         var skip = (page - 1) * limit;
 
         const productOutwards = await ProductOutward.find().skip(skip).limit(limit);
-        if (!productOutwards || !productOutwards.length) {
-            res.status(404).json({
-                status: "error",
-                success: false,
-                data: [],
-                error: "Product Outwards not found.",
-            });
+        if (limit > 0) {
+            var totalPages = Math.ceil((await ProductOutward.countDocuments()) / limit);
         }
+
         var orderGroups = [], outwardGroups = []
         for (let outward of productOutwards) {
             orderGroups.push(await OrderGroup.findOne({ orderId: outward.dispatchOrderId }))
@@ -150,6 +146,7 @@ exports.getProductOutwards = async (req, res, next) => {
         return res.status(200).json({
             success: true,
             status: "success",
+            pages: totalPages,
             data: {
                 productOutwards,
                 orderGroups,

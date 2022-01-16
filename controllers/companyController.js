@@ -49,9 +49,14 @@ exports.getCompanies = async (req, res, next) => {
 
         var companies = await Company.find().skip(skip).limit(limit);
 
+        if (limit > 0) {
+            var totalPages = Math.ceil((await Company.countDocuments()) / limit);
+        }
+
         return res.status(200).json({
             success: true,
             status: "success",
+            pages: totalPages,
             data: {
                 companies
             },
