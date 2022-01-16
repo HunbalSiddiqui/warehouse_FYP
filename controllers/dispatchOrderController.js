@@ -106,7 +106,12 @@ exports.createDispatchOrder = async (req, res, next) => {
 
 exports.getDispatchOrders = async (req, res, next) => {
     try {
-        let dispatchOrders = await DispatchOrder.find();
+        var { page, limit } = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 0;
+        var skip = (page - 1) * limit;
+
+        let dispatchOrders = await DispatchOrder.find().skip(skip).limit(limit);;
 
         return res.status(200).json({
             success: true,

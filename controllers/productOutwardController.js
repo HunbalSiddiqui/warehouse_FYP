@@ -127,7 +127,12 @@ exports.createProductOutward = async (req, res, next) => {
 
 exports.getProductOutwards = async (req, res, next) => {
     try {
-        const productOutwards = await ProductOutward.find();
+        var { page, limit } = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 0;
+        var skip = (page - 1) * limit;
+
+        const productOutwards = await ProductOutward.find().skip(skip).limit(limit);
         if (!productOutwards || !productOutwards.length) {
             res.status(404).json({
                 status: "error",

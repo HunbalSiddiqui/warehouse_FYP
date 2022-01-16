@@ -62,7 +62,12 @@ exports.updateCategory = async (req, res, next) => {
 
 exports.getCategories = async (req, res, next) => {
     try {
-        var categories = await Category.find();
+        var { page, limit } = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 0;
+        var skip = (page - 1) * limit;
+
+        var categories = await Category.find().skip(skip).limit(limit);
 
         return res.status(200).json({
             success: true,

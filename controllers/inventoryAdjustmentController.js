@@ -78,7 +78,12 @@ exports.createInventoryAdjustment = async (req, res, next) => {
 
 exports.getInventoryAdjustments = async (req, res, next) => {
     try {
-        const inventoryAdjustments = await InventoryAdjustment.find()
+        var { page, limit } = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 0;
+        var skip = (page - 1) * limit;
+
+        const inventoryAdjustments = await InventoryAdjustment.find().skip(skip).limit(limit);
 
         return res.status(200).json({
             success: true,
