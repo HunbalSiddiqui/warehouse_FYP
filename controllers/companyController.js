@@ -42,7 +42,12 @@ exports.createCompany = async (req, res, next) => {
 
 exports.getCompanies = async (req, res, next) => {
     try {
-        var companies = await Company.find();
+        var { page, limit } = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 0;
+        var skip = (page - 1) * limit;
+
+        var companies = await Company.find().skip(skip).limit(limit);
 
         return res.status(200).json({
             success: true,

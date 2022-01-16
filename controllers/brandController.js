@@ -63,7 +63,12 @@ exports.updateBrand = async (req, res, next) => {
 
 exports.getBrands = async (req, res, next) => {
     try {
-        var brands = await Brand.find();
+        var { page, limit } = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 0;
+        var skip = (page - 1) * limit;
+
+        var brands = await Brand.find().skip(skip).limit(limit);
 
         return res.status(200).json({
             success: true,

@@ -62,7 +62,12 @@ exports.updateProduct = async (req, res, next) => {
 
 exports.getProducts = async (req, res, next) => {
     try {
-        var products = await Product.find();
+        var { page, limit } = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 0;
+        var skip = (page - 1) * limit;
+
+        var products = await Product.find().skip(skip).limit(limit);
 
         return res.status(200).json({
             success: true,

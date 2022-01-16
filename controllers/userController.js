@@ -2,7 +2,13 @@ const User = require("../models/userModel");
 
 exports.getUsers = async (req, res, next) => {
     try {
-        var users = await User.find()
+        var { page, limit } = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 0;
+        var skip = (page - 1) * limit;
+
+        var users = await User.find().skip(skip).limit(limit);
+
         return res.status(200).json({
             success: true,
             status: "success",

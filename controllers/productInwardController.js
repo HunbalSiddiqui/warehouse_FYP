@@ -80,7 +80,12 @@ exports.createProductIward = async (req, res, next) => {
 
 exports.getProductInwards = async (req, res, next) => {
     try {
-        const productInwards = await ProductInward.find();
+        var { page, limit } = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 0;
+        var skip = (page - 1) * limit;
+
+        const productInwards = await ProductInward.find().skip(skip).limit(limit);
         if (!productInwards || !productInwards.length) {
             res.status(404).json({
                 status: "error",

@@ -62,7 +62,12 @@ exports.updateUOM = async (req, res, next) => {
 
 exports.getUOMs = async (req, res, next) => {
     try {
-        var uoms = await Uom.find();
+        var { page, limit } = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 0;
+        var skip = (page - 1) * limit;
+
+        var uoms = await Uom.find().skip(skip).limit(limit);
 
         return res.status(200).json({
             success: true,
