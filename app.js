@@ -15,6 +15,7 @@ const dispatchOrderRouter = require("./routes/dispatchOrderRoute")
 const productOutwardRouter = require("./routes/productOutwardRoute")
 const inventoryAdjustmentRouter = require("./routes/inventoryAdjustmentRoute")
 const vendorRouter = require("./routes/vendorRoute")
+const driverRouter = require("./routes/driverRoute")
 const app = express();
 app.use(express.json());
 
@@ -32,5 +33,6 @@ app.use("/api/v1/dispatch-orders", dispatchOrderRouter)
 app.use("/api/v1/product-outwards", productOutwardRouter)
 app.use("/api/v1/inventory-adjustments", inventoryAdjustmentRouter)
 app.use("/api/v1/logistics/vendors", vendorRouter)
+app.use("/api/v1/logistics/drivers", driverRouter)
 
 module.exports = app;
