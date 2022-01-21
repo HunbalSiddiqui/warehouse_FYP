@@ -4,11 +4,11 @@ const categorySchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.ObjectId,
         ref: "User",
-        require: [true, "Category must have a defined user."]
+        required: [true, "Category must have a defined user."]
     },
     name: {
         type: String,
-        require: [true, "Category must have a name."]
+        required: [true, "Category must have a name."]
     },
     isActive: {
         type: Boolean,
