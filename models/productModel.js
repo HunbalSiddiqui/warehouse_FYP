@@ -4,38 +4,38 @@ const productSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.ObjectId,
         ref: "User",
-        require: [true, "Product must have a defined user."]
+        required: [true, "Product must have a defined user."]
     },
     name: {
         type: String,
-        require: [true, "Product must have a name."]
+        required: [true, "Product must have a name."]
     },
     description: {
         type: String,
-        require: [true, "Product must have a description."]
+        required: [true, "Product must have a description."]
     },
     volume: {
         type: Number,
-        require: [true, "Product must have a volume."]
+        required: [true, "Product must have a volume."]
     },
     weight: {
         type: Number,
-        require: [true, "Product must have a weight."]
+        required: [true, "Product must have a weight."]
     },
     categoryId: {
         type: mongoose.Schema.ObjectId,
         ref: "Category",
-        require: [true, "Product must have a defined category."]
+        required: [true, "Product must have a defined category."]
     },
     brandId: {
         type: mongoose.Schema.ObjectId,
         ref: "Brand",
-        require: [true, "Product must have a defined brand."]
+        required: [true, "Product must have a defined brand."]
     },
     uomId: {
         type: mongoose.Schema.ObjectId,
         ref: "Uom",
-        require: [true, "Product must have a defined uom."]
+        required: [true, "Product must have a defined uom."]
     },
     isActive: {
         type: Boolean,

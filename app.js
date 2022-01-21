@@ -17,6 +17,7 @@ const inventoryAdjustmentRouter = require("./routes/inventoryAdjustmentRoute")
 const vendorRouter = require("./routes/vendorRoute")
 const driverRouter = require("./routes/driverRoute")
 const vehicleTypeRouter = require("./routes/vehicleTypeRoute")
+const vehicleRouter = require("./routes/vehicleRoute")
 const app = express();
 app.use(express.json());
 
@@ -36,5 +37,6 @@ app.use("/api/v1/inventory-adjustments", inventoryAdjustmentRouter)
 app.use("/api/v1/logistics/vendors", vendorRouter)
 app.use("/api/v1/logistics/drivers", driverRouter)
 app.use("/api/v1/logistics/vehicle-types", vehicleTypeRouter)
+app.use("/api/v1/logistics/vehicles", vehicleRouter)
 
 module.exports = app;
