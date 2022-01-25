@@ -196,15 +196,14 @@ exports.getProductOutward = async (req, res, next) => {
 
 exports.getProductOutwardRelations = async (req, res, next) => {
     try {
-        var warehouses = await Warehouse.find();
-        var companies = await Company.find();
-
+        let dispatchOrders = await DispatchOrder.find({
+            status: { $in: [0, 1] }
+        });
         return res.status(200).json({
             success: true,
             status: "success",
             data: {
-                warehouses,
-                companies
+                dispatchOrders
             },
         });
 
