@@ -1,4 +1,8 @@
+const City = require("../models/cityModel");
+const Company = require("../models/companyModel");
+const Driver = require("../models/driverModel");
 const Ride = require("../models/rideModel");
+const Vehicle = require("../models/vehicleModel");
 
 exports.createRide = async (req, res, next) => {
     try {
@@ -94,6 +98,41 @@ exports.getRide = async (req, res, next) => {
             status: "success",
             data: {
                 ride
+            },
+        });
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+exports.getRelations = async (req, res, next) => {
+    try {
+        var companies = await Company.find({
+            isActive: true
+        })
+            .select("internalIdForBusiness name type")
+        var drivers = await Driver.find({
+            isActive: true
+        })
+            .select("name")
+        var vehicles = await Vehicle.find({
+            isActive: true
+        })
+            .select("name vehicleTypeId driverId registrationNumber")
+        var cities = await City.find()
+            .select("name lat lng")
+        return res.status(200).json({
+            success: true,
+            status: "success",
+            data: {
+                companies,
+                drivers,
+                vehicles,
+                cities
             },
         });
     } catch (error) {
