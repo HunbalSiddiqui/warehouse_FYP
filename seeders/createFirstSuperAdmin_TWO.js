@@ -22,19 +22,19 @@ mongoose.connect(DB, {
 
 async function createUserRoles() {
     try {
-        var initialRoleData = [{
+        var initialRoleData = {
             firstName: "test",
-            lastName: "user",
-            username: "testuser",
-            email: "test@yopmail.com",
+            lastName: "user two",
+            username: "admin",
+            email: "admin@yopmail.com",
             phone: "+923412262270",
             password: "123456",
-            roleId: "61cdf2435eafa6514b25cd2e"
-        }]
-        const role = await User.insertMany(initialRoleData)
+            role: "61cdf2435eafa6514b25cd2e"
+        }
+        const user = await User.create(initialRoleData)
         console.log("User created successfully...")
     } catch (error) {
-        console.log(error)
+        console.log(error.message)
         console.log("User could not be created.")
     }
 }
