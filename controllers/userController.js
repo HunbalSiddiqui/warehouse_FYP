@@ -11,7 +11,10 @@ exports.getUsers = async (req, res, next) => {
         if (limit > 0) {
             var totalPages = Math.ceil((await User.countDocuments()) / limit);
         }
-
+        users = users.map((user) => {
+            user.password = null
+            return user
+        })
         return res.status(200).json({
             success: true,
             status: "success",
@@ -38,6 +41,35 @@ exports.getUser = async (req, res, next) => {
             // token: token,
             data: {
                 user: req.body.user,
+            },
+        });
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+exports.updateUser = async (req, res, next) => {
+    try {
+        var user = await User.findOne({ _id: req.params.id });
+        if (!user) {
+            return res.status(404).json({
+                status: "error",
+                success: false,
+                error: "user does not exist.",
+            });
+        }
+        user = await User.findOneAndUpdate({ _id: req.params.id }, req.body, {
+            new: true,
+        });
+        return res.status(200).json({
+            success: true,
+            status: "success",
+            data: {
+                user
             },
         });
     } catch (error) {

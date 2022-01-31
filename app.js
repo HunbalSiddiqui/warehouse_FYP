@@ -21,6 +21,8 @@ const vehicleRouter = require("./routes/vehicleRoute")
 const rideRouter = require("./routes/rideRoute")
 const cityRouter = require("./routes/cityRoute")
 const app = express();
+//implementing cors
+app.use(cors({ origin: true, credentials: true }))
 app.use(express.json());
 
 app.use("/api/v1/auth", authRouter)
