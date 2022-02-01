@@ -4,7 +4,7 @@ exports.getCities = async (req, res, next) => {
     try {
         var { page, limit } = req.query;
         page = parseInt(page) || 1;
-        limit = parseInt(limit) || 0;
+        limit = parseInt(limit) || 10;
         var skip = (page - 1) * limit;
 
         var cities = await City.find().skip(skip).limit(limit);

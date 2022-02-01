@@ -80,17 +80,20 @@ exports.getInventoryAdjustments = async (req, res, next) => {
     try {
         var { page, limit } = req.query;
         page = parseInt(page) || 1;
-        limit = parseInt(limit) || 0;
+        limit = parseInt(limit) || 10;
         var skip = (page - 1) * limit;
 
         const inventoryAdjustments = await InventoryAdjustment.find().skip(skip).limit(limit);
+        var totalPages, totalCount;
         if (limit > 0) {
-            var totalPages = Math.ceil((await InventoryAdjustment.countDocuments()) / limit);
+            totalCount = await InventoryAdjustment.countDocuments()
+            totalPages = Math.ceil(totalCount / limit);
         }
         return res.status(200).json({
             success: true,
             status: "success",
             pages: totalPages,
+            count: toalCount,
             data: {
                 inventoryAdjustments
             },

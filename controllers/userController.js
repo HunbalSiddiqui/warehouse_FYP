@@ -4,12 +4,14 @@ exports.getUsers = async (req, res, next) => {
     try {
         var { page, limit } = req.query;
         page = parseInt(page) || 1;
-        limit = parseInt(limit) || 0;
+        limit = parseInt(limit) || 10;
         var skip = (page - 1) * limit;
 
         var users = await User.find().skip(skip).limit(limit);
+        var totalPages, totalCount;
         if (limit > 0) {
-            var totalPages = Math.ceil((await User.countDocuments()) / limit);
+            totalCount = await User.countDocuments()
+            totalPages = Math.ceil(totalCount / limit);
         }
         users = users.map((user) => {
             user.password = null
@@ -19,6 +21,7 @@ exports.getUsers = async (req, res, next) => {
             success: true,
             status: "success",
             pages: totalPages,
+            count: totalCount,
             data: {
                 users,
             },
