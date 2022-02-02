@@ -37,13 +37,20 @@ exports.getUsers = async (req, res, next) => {
 
 exports.getUser = async (req, res, next) => {
     try {
-        // const user = await User.findOne({ _id: req.body.userId }).select("+password")
+        const user = await User.findOne({ _id: req.params.id }).select("+password")
+        if (!user) {
+            return res.status(404).json({
+                status: "error",
+                success: false,
+                error: "User does not exist.",
+            });
+        }
+        user.password = null
         return res.status(200).json({
             success: true,
             status: "success",
-            // token: token,
             data: {
-                user: req.body.user,
+                user
             },
         });
     } catch (error) {
