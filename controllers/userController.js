@@ -75,6 +75,7 @@ exports.updateUser = async (req, res, next) => {
         user = await User.findOneAndUpdate({ _id: req.params.id }, req.body, {
             new: true,
         });
+        user.password = null
         return res.status(200).json({
             success: true,
             status: "success",

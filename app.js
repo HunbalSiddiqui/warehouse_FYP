@@ -20,6 +20,7 @@ const vehicleTypeRouter = require("./routes/vehicleTypeRoute")
 const vehicleRouter = require("./routes/vehicleRoute")
 const rideRouter = require("./routes/rideRoute")
 const cityRouter = require("./routes/cityRoute")
+const roleRouter = require("./routes/roleRoute")
 const app = express();
 //implementing cors
 app.use(cors({ origin: true, credentials: true }))
@@ -44,5 +45,6 @@ app.use("/api/v1/logistics/vehicle-types", vehicleTypeRouter)
 app.use("/api/v1/logistics/vehicles", vehicleRouter)
 app.use("/api/v1/logistics/rides", rideRouter)
 app.use("/api/v1/cities", cityRouter)
+app.use("/api/v1/roles", roleRouter)
 
 module.exports = app;
