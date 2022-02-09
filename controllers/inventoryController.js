@@ -89,8 +89,8 @@ exports.exportInventory = async (req, res, next) => {
                 inv.Warehouse.name,
                 inv.Product.uomId.name,
                 inv.availableQuantity,
-                inv.committedQuantity,
-                inv.dispatchedQuantity,
+                inv.totalCommittedQuantity,
+                inv.totalDispatchedQuantity,
             ])
         );
 
