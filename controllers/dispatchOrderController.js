@@ -210,3 +210,70 @@ exports.getWarehouses = async (req, res, next) => {
         });
     }
 }
+
+exports.getProducts = async (req, res, next) => {
+    try {
+        if (req.params.companyId && req.params.warehouseId) {
+            let where = {
+                companyId: req.params.companyId,
+                warehouseId: req.params.warehouseId
+            }
+            let inventories = await Inventory.find(where);
+
+            return res.status(200).json({
+                success: true,
+                status: "success",
+                count: inventories.length,
+                data: {
+                    products: inventories.map((inventory) => inventory.Product)
+                },
+            });
+        }
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+exports.getInventory = async (req, res, next) => {
+    try {
+        if (req.params.companyId && req.params.warehouseId && req.params.productId) {
+            let where = {
+                companyId: req.params.companyId,
+                warehouseId: req.params.warehouseId,
+                productId: req.params.productId
+            }
+            let inventory = await Inventory.findOne(where).select(["-Product", "-Company", "-Warehouse"]);
+            inventory.Warehouse = null;
+            inventory.Company = null;
+            inventory.Product = null;
+            if (!inventory) {
+                return res.status(200).json({
+                    success: true,
+                    status: "data not found",
+                    count: 0,
+                    data: {
+                        inventory: null
+                    },
+                });
+            }
+            return res.status(200).json({
+                success: true,
+                status: "success",
+                count: 1,
+                data: {
+                    inventory
+                },
+            });
+        }
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
