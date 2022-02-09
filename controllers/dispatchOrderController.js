@@ -166,20 +166,42 @@ exports.getDispatchOrder = async (req, res, next) => {
 
 exports.getDispatchOrderRelations = async (req, res, next) => {
     try {
-        var warehouses = await Warehouse.find();
-        // var products = await Product.find();
         var companies = await Company.find();
 
         return res.status(200).json({
             success: true,
             status: "success",
             data: {
-                warehouses,
-                // products,
                 companies
             },
         });
 
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+exports.getWarehouses = async (req, res, next) => {
+    try {
+        if (req.params.companyId) {
+            let where = {
+                companyId: req.params.companyId
+            }
+            let inventories = await Inventory.find(where);
+
+            return res.status(200).json({
+                success: true,
+                status: "success",
+                count: inventories.length,
+                data: {
+                    warehouses: inventories.map((inventory) => inventory.Warehouse)
+                },
+            });
+        }
     } catch (error) {
         res.status(404).json({
             status: "error",
