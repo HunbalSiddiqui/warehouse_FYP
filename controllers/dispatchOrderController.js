@@ -138,20 +138,29 @@ exports.getDispatchOrders = async (req, res, next) => {
 
 exports.getDispatchOrder = async (req, res, next) => {
     try {
-        let dispatchOrder = await DispatchOrder.findOne({ _id: req.params.id });
+        let dispatchOrder = await DispatchOrder.findOne({ _id: req.params.id })
+            .populate({
+                path: 'userId',
+                select: "firstName lastName"
+            }).select("-quantity");
 
         if (!dispatchOrder) {
-            res.status(404).json({
+            return res.status(404).json({
                 status: "error",
                 success: false,
                 error: "Dispatch Order not found.",
             });
         }
-
+        let orderGroups = await OrderGroup.find({
+            orderId: dispatchOrder.id
+        }).populate({
+            path: 'Inventory',
+        })
         return res.status(200).json({
             success: true,
             status: "success",
             data: {
+                orderGroups,
                 dispatchOrder
             },
         });

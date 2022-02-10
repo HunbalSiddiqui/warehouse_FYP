@@ -20,8 +20,15 @@ const orderGroupSchema = mongoose.Schema({
         type: Number,
         required: [true, "OrderGroup must have quantity."]
     },
-}, {
-    timestamps: true
+},
+    { toJSON: { virtuals: true }, toObject: { virtuals: true }, timestamps: true }
+)
+
+orderGroupSchema.virtual("Inventory", {
+    ref: "Inventory",
+    foreignField: "_id", //referencing -> populate
+    localField: "inventoryId", //referencing -> populate
+    justOne: true // to remove array
 })
 
 const OrderGroup = new mongoose.model("OrderGroup", orderGroupSchema)
