@@ -27,9 +27,16 @@ const vendorSchema = mongoose.Schema({
         type: Boolean,
         default: true
     }
-}, {
-    timestamps: true
-})
+},
+    { toJSON: { virtuals: true }, toObject: { virtuals: true }, timestamps: true }
+)
+
+vendorSchema.virtual("User", {
+    ref: "User",
+    foreignField: "_id", //referencing -> populate
+    localField: "userId", //referencing -> populate
+    justOne: true, // to remove array
+});
 
 const Vendor = new mongoose.model("Vendor", vendorSchema);
 

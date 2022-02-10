@@ -1,3 +1,4 @@
+const User = require("../models/userModel");
 const Vendor = require("../models/vendorModel");
 
 exports.createVendor = async (req, res, next) => {
@@ -14,9 +15,15 @@ exports.createVendor = async (req, res, next) => {
         }
 
         const query = Vendor.find()
+
         const count = await query.count()
         req.body.internalIdForBusiness = `V-${count}`
         vendor = await Vendor.create(req.body)
+
+        let user = await User.findOne({
+            id: vendor.userId
+        })
+        vendor.User = user
         if (!vendor) {
             return res.status(404).json({
                 status: "error",
@@ -47,7 +54,11 @@ exports.getVendors = async (req, res, next) => {
         limit = parseInt(limit) || 10;
         var skip = (page - 1) * limit;
 
-        var vendors = await Vendor.find().skip(skip).limit(limit);
+        var vendors = await Vendor.find().skip(skip).limit(limit)
+            .populate({
+                path: "User",
+                select: "firstName lastName"
+            });
         var totalPages, totalCount;
         if (limit > 0) {
             totalCount = await Vendor.countDocuments()
@@ -74,7 +85,11 @@ exports.getVendors = async (req, res, next) => {
 
 exports.getVendor = async (req, res, next) => {
     try {
-        var vendor = await Vendor.findOne({ _id: req.params.id });
+        var vendor = await Vendor.findOne({ _id: req.params.id })
+            .populate({
+                path: "User",
+                select: "firstName lastName"
+            });
         if (!vendor) {
             return res.status(404).json({
                 status: "error",
