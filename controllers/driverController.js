@@ -44,7 +44,11 @@ exports.getDrivers = async (req, res, next) => {
         limit = parseInt(limit) || 10;
         var skip = (page - 1) * limit;
 
-        var drivers = await Driver.find().skip(skip).limit(limit);
+        var drivers = await Driver.find().skip(skip).limit(limit)
+            .populate({
+                path: "Vendor",
+                select: "name"
+            });
         var totalPages, totalCount;
         if (limit > 0) {
             totalCount = await Driver.countDocuments()
@@ -71,7 +75,11 @@ exports.getDrivers = async (req, res, next) => {
 
 exports.getDriver = async (req, res, next) => {
     try {
-        var driver = await Driver.findOne({ _id: req.params.id });
+        var driver = await Driver.findOne({ _id: req.params.id })
+            .populate({
+                path: "Vendor",
+                select: "name"
+            });
         if (!driver) {
             return res.status(404).json({
                 status: "error",

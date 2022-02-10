@@ -33,9 +33,16 @@ const driverSchema = mongoose.Schema({
         type: Boolean,
         default: true
     }
-}, {
-    timestamps: true
-})
+},
+    { toJSON: { virtuals: true }, toObject: { virtuals: true }, timestamps: true }
+)
+
+driverSchema.virtual("Vendor", {
+    ref: "Vendor",
+    foreignField: "_id", //referencing -> populate
+    localField: "vendorId", //referencing -> populate
+    justOne: true, // to remove array
+});
 
 const Driver = new mongoose.model("Driver", driverSchema);
 
