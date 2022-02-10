@@ -36,9 +36,31 @@ const productInwardSchema = mongoose.Schema({
     driverName: {
         type: String,
     },
-}, {
-    timestamps: true
-})
+},
+    { toJSON: { virtuals: true }, toObject: { virtuals: true }, timestamps: true }
+)
+
+productInwardSchema.virtual("User", {
+    ref: "User",
+    foreignField: "_id", //referencing -> populate
+    localField: "userId", //referencing -> populate
+    justOne: true, // to remove array
+});
+
+productInwardSchema.virtual("Company", {
+    ref: "Company",
+    foreignField: "_id", //referencing -> populate
+    localField: "companyId", //referencing -> populate
+    justOne: true, // to remove array
+});
+
+productInwardSchema.virtual("Warehouse", {
+    ref: "Warehouse",
+    foreignField: "_id", //referencing -> populate
+    localField: "warehouseId", //referencing -> populate
+    justOne: true, // to remove array
+});
+
 
 const ProductInward = new mongoose.model("ProductInward", productInwardSchema)
 

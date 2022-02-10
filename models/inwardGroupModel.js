@@ -20,9 +20,16 @@ const inwardGroupSchema = mongoose.Schema({
         ref: "User",
         required: [true, "User must be provided."]
     }
-}, {
-    timestamps: true
-})
+},
+    { toJSON: { virtuals: true }, toObject: { virtuals: true }, timestamps: true }
+)
+
+inwardGroupSchema.virtual("Product", {
+    ref: "Product",
+    foreignField: "_id", //referencing -> populate
+    localField: "productId", //referencing -> populate
+    justOne: true, // to remove array
+});
 
 const InwardGroup = new mongoose.model("InwardGroup", inwardGroupSchema)
 

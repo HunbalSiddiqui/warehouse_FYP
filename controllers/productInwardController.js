@@ -112,22 +112,41 @@ exports.getProductInwards = async (req, res, next) => {
 
 exports.getProductInward = async (req, res, next) => {
     try {
-        const productInward = await ProductInward.findOne({ _id: req.params.id });
+        const productInward = await ProductInward.findOne({ _id: req.params.id })
+            .populate({
+                path: "User",
+                select: "firstName lastName"
+            })
+            .populate({
+                path: "Warehouse",
+                select: "name"
+            })
+            .populate({
+                path: "Company",
+                select: "name"
+            })
 
         if (!productInward) {
-            res.status(404).json({
+            return res.status(404).json({
                 status: "error",
                 success: false,
                 error: "Product Inwards not found.",
             });
         }
-
+        const inwardGroups = await InwardGroup.find({
+            inwardId: productInward.id
+        })
+            .populate({
+                path: "Product",
+                select: "name"
+            })
         // return 
         return res.status(200).json({
             success: true,
             status: "success",
             data: {
-                productInward
+                productInward,
+                inwardGroups
             },
         });
     } catch (error) {
