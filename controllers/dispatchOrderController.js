@@ -202,12 +202,19 @@ exports.getWarehouses = async (req, res, next) => {
             }
             let inventories = await Inventory.find(where);
 
+            // get unique warehouses only
+            let warehouses = []
+            for (let inventory of inventories) {
+                if (!warehouses.includes(inventory.Warehouse)) {
+                    warehouses.push(inventory.Warehouse)
+                }
+            }
             return res.status(200).json({
                 success: true,
                 status: "success",
                 count: inventories.length,
                 data: {
-                    warehouses: inventories.map((inventory) => inventory.Warehouse)
+                    warehouses
                 },
             });
         }
