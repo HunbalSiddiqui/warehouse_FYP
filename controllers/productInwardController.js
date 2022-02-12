@@ -138,7 +138,12 @@ exports.getProductInward = async (req, res, next) => {
         })
             .populate({
                 path: "Product",
-                select: "name"
+                select: "name",
+                populate: [{
+                    path: 'uomId',
+                    model: 'Uom',
+                    select: "name",
+                }]
             })
         // return 
         return res.status(200).json({
