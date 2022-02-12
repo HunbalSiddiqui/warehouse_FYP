@@ -176,8 +176,8 @@ exports.getProductOutward = async (req, res, next) => {
             });
         }
         var orderGroups = [], outwardGroups = []
-        orderGroups.push(await OrderGroup.findOne({ orderId: productOutward.dispatchOrderId }))
-        outwardGroups.push(await OutwardGroup.findOne({ outwardId: productOutward.id }))
+        orderGroups = await OrderGroup.find({ orderId: productOutward.dispatchOrderId })
+        outwardGroups = await OutwardGroup.find({ outwardId: productOutward.id })
         // return 
         return res.status(200).json({
             success: true,
