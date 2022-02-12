@@ -83,7 +83,11 @@ exports.getInventoryAdjustments = async (req, res, next) => {
         limit = parseInt(limit) || 10;
         var skip = (page - 1) * limit;
 
-        const inventoryAdjustments = await InventoryAdjustment.find().skip(skip).limit(limit);
+        const inventoryAdjustments = await InventoryAdjustment.find().skip(skip).limit(limit)
+            .populate({
+                path: "User",
+                select: "firstName firstName",
+            })
         var totalPages, totalCount;
         if (limit > 0) {
             totalCount = await InventoryAdjustment.countDocuments()
@@ -93,7 +97,7 @@ exports.getInventoryAdjustments = async (req, res, next) => {
             success: true,
             status: "success",
             pages: totalPages,
-            count: toalCount,
+            count: totalCount,
             data: {
                 inventoryAdjustments
             },
@@ -110,6 +114,10 @@ exports.getInventoryAdjustments = async (req, res, next) => {
 exports.getInventoryAdjustment = async (req, res, next) => {
     try {
         const inventoryAdjustment = await InventoryAdjustment.findOne({ _id: req.params.id })
+            .populate({
+                path: "User",
+                select: "firstName firstName",
+            })
         if (!inventoryAdjustment) {
             return res.status(404).json({
                 status: "error",

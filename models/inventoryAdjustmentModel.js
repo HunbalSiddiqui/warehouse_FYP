@@ -23,6 +23,13 @@ const inventoryAdjustmentSchema = mongoose.Schema({
     timestamps: true
 })
 
+inventoryAdjustmentSchema.virtual("User", {
+    ref: "User",
+    foreignField: "_id", //referencing -> populate
+    localField: "adminId", //referencing -> populate
+    justOne: true // to remove array
+});
+
 inventoryAdjustmentSchema.virtual("Inventory", {
     ref: "Inventory",
     foreignField: "_id", //referencing -> populate
