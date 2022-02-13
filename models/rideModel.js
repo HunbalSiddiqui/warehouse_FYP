@@ -22,26 +22,37 @@ const rideSchema = new mongoose.Schema({
         ref: "Vehicle",
         required: [true, "Ride must have a driver."]
     },
+    outwardId: {
+        type: mongoose.Schema.ObjectId,
+        ref: "ProductOutward",
+    },
     pickupCityId: {
         type: mongoose.Schema.ObjectId,
         ref: "City",
         required: [true, "Ride must have a pickup city."]
+    },
+    pickupCityAddress: {
+        type: String,
+        required: [true, "Ride must have a defined pickup address."],
     },
     dropoffCityId: {
         type: mongoose.Schema.ObjectId,
         ref: "City",
         required: [true, "Ride must have a dropoff city."]
     },
-    // status: {
-    //     type: String,
-    //     required: [true, "Ride must have a defined status."],
-    //     defualt: RIDE_STATUS.SCHEDULED
-    // },
+    dropoffCityAddress: {
+        type: String,
+        required: [true, "Ride must have a defined dropoff address."],
+    },
     price: {
         type: Number,
         required: [true, "Ride must have price."]
     },
     cost: {
+        type: Number,
+        required: [true, "Ride must have cost."]
+    },
+    cargoWeight: {
         type: Number,
         required: [true, "Ride must have cost."]
     },
@@ -71,6 +82,12 @@ rideSchema.virtual("Driver", {
     ref: "Driver",
     foreignField: "_id", //referencing -> populate
     localField: "driverId", //referencing -> populate
+    justOne: true // to remove array
+});
+rideSchema.virtual("ProductOutward", {
+    ref: "ProductOutward",
+    foreignField: "_id", //referencing -> populate
+    localField: "outwardId", //referencing -> populate
     justOne: true // to remove array
 });
 rideSchema.virtual("PickupCity", {
@@ -104,6 +121,10 @@ rideSchema.pre(/^find/, function (next) {
     this.populate({
         path: "Driver",
         select: "name",
+    });
+    this.populate({
+        path: "ProductOutward",
+        select: "internalIdForBusiness externalVehicle",
     });
     this.populate({
         path: "PickupCity",

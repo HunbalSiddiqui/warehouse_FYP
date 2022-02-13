@@ -1,6 +1,7 @@
 const City = require("../models/cityModel");
 const Company = require("../models/companyModel");
 const Driver = require("../models/driverModel");
+const ProductOutward = require("../models/productOutwardModel");
 const Ride = require("../models/rideModel");
 const Vehicle = require("../models/vehicleModel");
 
@@ -128,6 +129,10 @@ exports.getRelations = async (req, res, next) => {
             .select("name vehicleTypeId driverId registrationNumber")
         var cities = await City.find()
             .select("name lat lng")
+        var productOutwards = await ProductOutward.find({
+            externalVehicle: false
+        })
+            .select("internalIdForBusiness")
         return res.status(200).json({
             success: true,
             status: "success",
@@ -135,7 +140,8 @@ exports.getRelations = async (req, res, next) => {
                 companies,
                 drivers,
                 vehicles,
-                cities
+                cities,
+                productOutwards
             },
         });
     } catch (error) {
