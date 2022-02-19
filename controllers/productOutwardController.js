@@ -178,10 +178,10 @@ exports.getProductOutward = async (req, res, next) => {
         var orderGroups = [], outwardGroups = []
         orderGroups = await OrderGroup.find({ orderId: productOutward.dispatchOrderId })
         outwardGroups = await OutwardGroup.find({ outwardId: productOutward.id })
-        .populate({
-            path: "Inventory",
-            select: "firstName lastName"
-        })
+        // .populate({
+        //     path: "User",
+        //     select: "firstName lastName"
+        // })
         // return 
         return res.status(200).json({
             success: true,
