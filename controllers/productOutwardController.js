@@ -127,22 +127,54 @@ exports.createProductOutward = async (req, res, next) => {
 
 exports.getProductOutwards = async (req, res, next) => {
     try {
-        var { page, limit } = req.query;
+        var { page, limit, search, companyId, warehouseId } = req.query;
         page = parseInt(page) || 1;
         limit = parseInt(limit) || 10;
         var skip = (page - 1) * limit;
+        let where = {}
+        if (search) {
+            where["$or"] = [
+                {
+                    internalIdForBusiness: {
+                        $regex: search,
+                        $options: "i"
+                    }
+                },
+            ]
+        }
 
-        const productOutwards = await ProductOutward.find().skip(skip).limit(limit);
+        let productOutwards = await ProductOutward.find(where).skip(skip).limit(limit);
         var totalPages, totalCount;
         if (limit > 0) {
-            totalCount = await ProductOutward.countDocuments()
+            totalCount = await ProductOutward.countDocuments(where)
             totalPages = Math.ceil(totalCount / limit);
         }
 
-        var orderGroups = [], outwardGroups = []
+        var orderGroups = [], outwardGroups = [], updatedOutwards = []
         for (let outward of productOutwards) {
-            orderGroups.push(await OrderGroup.findOne({ orderId: outward.dispatchOrderId }))
-            outwardGroups.push(await OutwardGroup.findOne({ outwardId: outward.id }))
+            let where = {}
+            if (companyId) {
+                where.companyId = companyId
+            }
+            if (warehouseId) {
+                where.warehouseId = warehouseId
+            }
+
+            let orderGroup = await OrderGroup.findOne({ orderId: outward.dispatchOrderId })
+            let outwardGroup = await OutwardGroup.findOne({ outwardId: outward.id })
+                .populate({
+                    path: "inventoryId",
+                    // filtering field, you can use mongoDB syntax
+                    // match: { age: { $gte: 21 } },
+                    match: where,
+                    model: Inventory
+                })
+
+            if (outwardGroup.inventoryId && orderGroup) {
+                orderGroups.push(orderGroup)
+                outwardGroups.push(outwardGroup)
+                updatedOutwards.push(outward)
+            }
         }
         // return 
         return res.status(200).json({
@@ -151,7 +183,7 @@ exports.getProductOutwards = async (req, res, next) => {
             pages: totalPages,
             count: totalCount,
             data: {
-                productOutwards,
+                productOutwards: updatedOutwards,
                 orderGroups,
                 outwardGroups
             },
@@ -210,11 +242,18 @@ exports.getProductOutwardRelations = async (req, res, next) => {
         let dispatchOrders = await DispatchOrder.find({
             status: { $in: [0, 1] }
         });
+
+        let warehouses = await Warehouse.find().select("id name");
+        // let products = await Product.find();
+        let companies = await Company.find().select("id name");
+
         return res.status(200).json({
             success: true,
             status: "success",
             data: {
-                dispatchOrders
+                dispatchOrders,
+                warehouses,
+                companies
             },
         });
 
