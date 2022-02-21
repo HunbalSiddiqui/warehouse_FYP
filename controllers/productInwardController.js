@@ -5,6 +5,8 @@ const InwardGroup = require("../models/inwardGroupModel");
 const ProductInward = require("../models/productInwardModel");
 const Product = require("../models/productModel");
 const Warehouse = require("../models/warehouseModel");
+const ExcelJS = require("exceljs");
+const User = require("../models/userModel");
 
 exports.createProductIward = async (req, res, next) => {
     const session = await conn.startSession();
@@ -85,7 +87,20 @@ exports.getProductInwards = async (req, res, next) => {
         limit = parseInt(limit) || 10;
         var skip = (page - 1) * limit;
 
-        const productInwards = await ProductInward.find().skip(skip).limit(limit);
+        const productInwards = await ProductInward.find().skip(skip).limit(limit)
+            .populate({
+                path: "User",
+                select: "firstName lastName"
+            })
+            .populate({
+                path: "Warehouse",
+                select: "name"
+            })
+            .populate({
+                path: "Company",
+                select: "name"
+            })
+
         var totalPages, totalCount;
         if (limit > 0) {
             totalCount = await ProductInward.countDocuments()
@@ -178,6 +193,92 @@ exports.getInwardRelations = async (req, res, next) => {
                 companies
             },
         });
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+exports.exportProductInwards = async (req, res, next) => {
+    try {
+        let workbook = new ExcelJS.Workbook();
+
+        let worksheet = workbook.addWorksheet("Inwards");
+        const getColumnsConfig = (columns) =>
+            columns.map((column) => ({ header: column, width: Math.ceil(column.length * 1.5), outlineLevel: 1 }));
+
+        worksheet.columns = getColumnsConfig([
+            "INWARD ID",
+            "CUSTOMER",
+            "WAREHOUSE",
+            "PRODUCT",
+            "QUANTITY",
+            "REFRENCE ID",
+            "VEHICLE TYPE",
+            "VEHICLE NAME",
+            "VEHICLE NUMBER",
+            "DRIVER NAME",
+            "CREATED BY",
+        ]);
+
+        let productInwards = await ProductInward.find()
+            .populate({
+                path: "userId",
+                select: "firstName lastName",
+                model: User
+            })
+            .populate({
+                path: "companyId",
+                select: "name",
+                model: Company
+            })
+            .populate({
+                path: "warehouseId",
+                select: "name",
+                model: Warehouse
+            })
+
+        for (let inward of productInwards) {
+            let inwardGroups = await InwardGroup.find({
+                inwardId: inward.id
+            })
+                .populate({
+                    path: "Product",
+                    select: "name",
+                    populate: [{
+                        path: 'uomId',
+                        model: 'Uom',
+                        select: "name",
+                    }]
+                })
+
+            inward.inwardGroups = inwardGroups
+        }
+
+        worksheet.addRows(
+            productInwards.map((productInward) =>
+                productInward.inwardGroups.map((inwardGroup) => [
+                    productInward.internalIdForBusiness,
+                    productInward.companyId.name,
+                    productInward.warehouseId.name,
+                    inwardGroup.Product.name,
+                    inwardGroup.quantity,
+                    productInward.referenceId,
+                    productInward.vehicleType,
+                    productInward.vehicleName,
+                    productInward.vehicleNumber,
+                    productInward.driverName,
+                    `${productInward.userId.firstName} ${productInward.userId.lastName}`,
+                ]))
+        );
+
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.setHeader("Content-Disposition", "attachment; filename=" + "Inventory.xlsx");
+
+        return workbook.xlsx.write(res).then(() => res.end());
     } catch (error) {
         res.status(404).json({
             status: "error",
