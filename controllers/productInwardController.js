@@ -82,16 +82,32 @@ exports.createProductIward = async (req, res, next) => {
 
 exports.getProductInwards = async (req, res, next) => {
     try {
-        var { page, limit, search } = req.query;
+        var { page, limit, search, companyId, warehouseId } = req.query;
         page = parseInt(page) || 1;
         limit = parseInt(limit) || 10;
         var skip = (page - 1) * limit;
         let where = {}
         if (search) {
-            where.internalIdForBusiness = {
-                $regex: search,
-                $options: "i"
-            }
+            where["$or"] = [
+                {
+                    internalIdForBusiness: {
+                        $regex: search,
+                        $options: "i"
+                    }
+                },
+                {
+                    driverName: {
+                        $regex: search,
+                        $options: "i"
+                    }
+                },
+            ]
+        }
+        if (companyId) {
+            where.companyId = companyId
+        }
+        if (warehouseId) {
+            where.warehouseId = warehouseId
         }
 
         const productInwards = await ProductInward.find(where).skip(skip).limit(limit)
