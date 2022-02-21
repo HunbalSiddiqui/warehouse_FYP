@@ -106,15 +106,35 @@ exports.createDispatchOrder = async (req, res, next) => {
 
 exports.getDispatchOrders = async (req, res, next) => {
     try {
-        var { page, limit } = req.query;
+        var { page, limit, search, status } = req.query;
         page = parseInt(page) || 1;
         limit = parseInt(limit) || 10;
         var skip = (page - 1) * limit;
+        let where = {}
+        if (search) {
+            where["$or"] = [
+                {
+                    internalIdForBusiness: {
+                        $regex: search,
+                        $options: "i"
+                    }
+                },
+                {
+                    receiverName: {
+                        $regex: search,
+                        $options: "i"
+                    }
+                },
+            ]
+        }
+        if (status) {
+            where.status = status
+        }
 
-        let dispatchOrders = await DispatchOrder.find().skip(skip).limit(limit);;
+        let dispatchOrders = await DispatchOrder.find(where).skip(skip).limit(limit);;
         var totalPages, totalCount;
         if (limit > 0) {
-            totalCount = await DispatchOrder.countDocuments()
+            totalCount = await DispatchOrder.countDocuments(where)
             totalPages = Math.ceil(totalCount / limit);
         }
 
