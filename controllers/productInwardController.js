@@ -82,12 +82,19 @@ exports.createProductIward = async (req, res, next) => {
 
 exports.getProductInwards = async (req, res, next) => {
     try {
-        var { page, limit } = req.query;
+        var { page, limit, search } = req.query;
         page = parseInt(page) || 1;
         limit = parseInt(limit) || 10;
         var skip = (page - 1) * limit;
+        let where = {}
+        if (search) {
+            where.internalIdForBusiness = {
+                $regex: search,
+                $options: "i"
+            }
+        }
 
-        const productInwards = await ProductInward.find().skip(skip).limit(limit)
+        const productInwards = await ProductInward.find(where).skip(skip).limit(limit)
             .populate({
                 path: "User",
                 select: "firstName lastName"
@@ -103,7 +110,7 @@ exports.getProductInwards = async (req, res, next) => {
 
         var totalPages, totalCount;
         if (limit > 0) {
-            totalCount = await ProductInward.countDocuments()
+            totalCount = await ProductInward.countDocuments(where)
             totalPages = Math.ceil(totalCount / limit);
         }
         // return 
