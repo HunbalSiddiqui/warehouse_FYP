@@ -6,6 +6,8 @@ const Inventory = require("../models/inventoryModel");
 const OrderGroup = require("../models/orderGroup");
 const Product = require("../models/productModel");
 const Warehouse = require("../models/warehouseModel");
+const ExcelJS = require("exceljs");
+const User = require("../models/userModel");
 
 exports.createDispatchOrder = async (req, res, next) => {
     const session = await conn.startSession();
@@ -305,6 +307,77 @@ exports.getInventory = async (req, res, next) => {
                 },
             });
         }
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+exports.exportDispatchOrders = async (req, res, next) => {
+    try {
+        let workbook = new ExcelJS.Workbook();
+
+        let worksheet = workbook.addWorksheet("Orders");
+        const getColumnsConfig = (columns) =>
+            columns.map((column) => ({ header: column, width: Math.ceil(column.length * 1.5), outlineLevel: 1 }));
+
+        worksheet.columns = getColumnsConfig([
+            "INWARD ID",
+            "CUSTOMER",
+            "WAREHOUSE",
+            "PRODUCT",
+            "UOM",
+            "QUANTITY",
+            "REFRENCE ID",
+            "RECEIVER NAME",
+            "RECEIVER PHONE",
+            "SHIPMENT DATE",
+            "CREATED BY",
+        ]);
+
+        let dispatchOrders = await DispatchOrder.find()
+            .populate({
+                path: "userId",
+                select: "firstName lastName",
+                model: User
+            })
+
+        for (let order of dispatchOrders) {
+            let orderGroups = await OrderGroup.find({
+                orderId: order.id
+            })
+                .populate({
+                    path: "Inventory"
+                })
+
+            order.orderGroups = orderGroups
+        }
+
+        worksheet.addRows(
+            dispatchOrders.map((order) =>
+                order.orderGroups.map((orderGroup) => [
+                    order.internalIdForBusiness,
+                    orderGroup.Inventory.Company.name,
+                    orderGroup.Inventory.Warehouse.name,
+                    orderGroup.Inventory.Product.name,
+                    orderGroup.Inventory.Product.uomId.name,
+                    orderGroup.quantity,
+                    order.referenceId,
+                    order.vehicleType,
+                    order.receiverName,
+                    order.receiverPhone,
+                    order.shipmentDate,
+                    `${order.userId.firstName} ${order.userId.lastName}`,
+                ]))
+        );
+
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.setHeader("Content-Disposition", "attachment; filename=" + "Orders.xlsx");
+
+        return workbook.xlsx.write(res).then(() => res.end());
     } catch (error) {
         res.status(404).json({
             status: "error",
