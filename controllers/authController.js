@@ -31,6 +31,16 @@ const createAndSendToken = (user, res) => {
 
 exports.signup = async (req, res, next) => {
     try {
+        // validate if roleId is valid
+        var role = await Role.findOne({
+            _id : req.body.role
+        })
+        if(!role){
+            return res.status(404).json({
+                status: "error",
+                error: "please provide valid role.",
+            });
+        }
         var user = await User.create(req.body); // bson
         // return obj
         var profileUser = {
@@ -167,4 +177,27 @@ exports.protect = async (req, res, next) => {
             error: error.message,
         });
     }
+}
+
+exports.validateUser = async (req,res,next)=>{
+    try {
+        var role = await Role.findOne({
+            _id : req.body.user.role,
+            type: process.env.MASTER_USER
+        })
+
+        if(!role){
+            return res.status(401).json({
+                status: "error",
+                error: "You are not authorized add more users.",
+            });   
+        }
+        next()
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }   
 }
