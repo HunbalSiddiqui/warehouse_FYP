@@ -7,6 +7,8 @@ const Inventory = require("../models/inventoryModel");
 const OutwardGroup = require("../models/outwardGroup");
 const Warehouse = require("../models/warehouseModel");
 const Company = require("../models/companyModel");
+const ExcelJS = require("exceljs");
+const User = require("../models/userModel");
 
 exports.createProductOutward = async (req, res, next) => {
     const session = await conn.startSession();
@@ -257,6 +259,72 @@ exports.getProductOutwardRelations = async (req, res, next) => {
             },
         });
 
+    } catch (error) {
+        res.status(404).json({
+            status: "error",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
+exports.exportProductOutwards = async (req, res, next) => {
+    try {
+        let workbook = new ExcelJS.Workbook();
+
+        let worksheet = workbook.addWorksheet("Orders");
+        const getColumnsConfig = (columns) =>
+            columns.map((column) => ({ header: column, width: Math.ceil(column.length * 1.5), outlineLevel: 1 }));
+
+        worksheet.columns = getColumnsConfig([
+            "OUTWARD ID",
+            "ORDER ID",
+            "CUSTOMER",
+            "WAREHOUSE",
+            "PRODUCT",
+            "UOM",
+            "QUANTITY",
+            "OUTWARD DATE",
+            "CREATED BY",
+        ]);
+
+        let productOutwards = await ProductOutward.find()
+            .populate({
+                path: "userId",
+                select: "firstName lastName",
+                model: User
+            })
+
+        for (let outward of productOutwards) {
+            let outwardGroups = await OutwardGroup.find({
+                outwardId: outward.id
+            })
+                .populate({
+                    path: "inventoryId"
+                })
+
+            outward.outwardGroups = outwardGroups
+        }
+
+        worksheet.addRows(
+            productOutwards.map((outward) =>
+                outward.outwardGroups.map((outwardGroup) => [
+                    outward.internalIdForBusiness,
+                    outward.DispatchOrder.internalIdForBusiness,
+                    outwardGroup.inventoryId.Company.name,
+                    outwardGroup.inventoryId.Warehouse.name,
+                    outwardGroup.inventoryId.Product.name,
+                    outwardGroup.inventoryId.Product.uomId.name,
+                    outwardGroup.quantity,
+                    outward.createdAt,
+                    `${outward.userId.firstName} ${outward.userId.lastName}`,
+                ]))
+        );
+
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.setHeader("Content-Disposition", "attachment; filename=" + "Orders.xlsx");
+
+        return workbook.xlsx.write(res).then(() => res.end());
     } catch (error) {
         res.status(404).json({
             status: "error",
