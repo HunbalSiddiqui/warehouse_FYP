@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const Role = require("../models/roleModel");
 const User = require("../models/userModel");
 
-const DB = `mongodb+srv://root:root@cluster0.ui4yz.mongodb.net/fyp?retryWrites=true&w=majority`
+const DB = `mongodb+srv://root:Mw3NVh0mRmloWS8U@cluster0.ui4yz.mongodb.net/fyp?retryWrites=true&w=majority`
 
 mongoose.connect(DB, {
     useNewURLParser: true,
